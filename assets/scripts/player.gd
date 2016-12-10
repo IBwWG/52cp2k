@@ -29,15 +29,13 @@ func _input(ie):
 
 
 func check_ray():
+	sighted = null
 	var camRay = get_node("body/camera/camRay")
 	if (camRay.is_colliding()):
 #		print(camRay.get_collider().get_name())
 		var collider = camRay.get_collider()
 		if (collider.get_name()=="floaty"):
 			sighted = collider
-		else:
-			sighted = null
-
 
 func _integrate_forces(state):
 	
