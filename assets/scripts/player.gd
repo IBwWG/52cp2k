@@ -13,7 +13,7 @@ func _input(ie):
 		var pitch = rad2deg(get_node("body/camera").get_rotation().x);
 		
 		yaw = fmod(yaw - ie.relative_x * view_sensitivity, 360);
-		pitch = max(min(pitch + ie.relative_y * view_sensitivity, 90), -90);
+		pitch = max(min(pitch - ie.relative_y * view_sensitivity, 90), -90);
 		
 		get_node("body").set_rotation(Vector3(0, deg2rad(yaw), 0));
 		get_node("body/camera").set_rotation(Vector3(deg2rad(pitch), 0, 0));
