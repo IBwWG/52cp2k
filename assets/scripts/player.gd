@@ -1,6 +1,7 @@
 extends RigidBody
 
 var view_sensitivity = 0.3;
+var sighted = null;
 
 const walk_speed = 5;
 const jump_speed = 3;
@@ -20,16 +21,22 @@ func _input(ie):
 		body.set_rotation(Vector3(0, deg2rad(yaw), 0));
 		camera.set_rotation(Vector3(deg2rad(pitch), 0, 0));
 		
-		var camRay = get_node("body/camera/camRay")
-		if (camRay.is_colliding()):
-			print(camRay.get_collider().get_name())
-			if (camRay.get_collider().get_name()=="floaty"):
-				var green_mat = FixedMaterial.new()
-				green_mat.set_parameter(green_mat.PARAM_DIFFUSE, Color(0, 1, 0, 1))
-				camRay.get_collider().get_node("mesh").set_material_override(green_mat)
+		check_ray()
+	elif (ie.type == InputEvent.MOUSE_BUTTON and ie.pressed and sighted != null):
+		var green_mat = FixedMaterial.new()
+		green_mat.set_parameter(green_mat.PARAM_DIFFUSE, Color(0, 1, 0, 1))
+		sighted.get_node("mesh").set_material_override(green_mat)
 
-		
-	
+
+func check_ray():
+	var camRay = get_node("body/camera/camRay")
+	if (camRay.is_colliding()):
+#		print(camRay.get_collider().get_name())
+		var collider = camRay.get_collider()
+		if (collider.get_name()=="floaty"):
+			sighted = collider
+		else:
+			sighted = null
 
 
 func _integrate_forces(state):
@@ -46,6 +53,8 @@ func _integrate_forces(state):
 	if Input.is_key_pressed(KEY_D):
 		direction += aim[0];
 	direction = direction.normalized();
+	if (direction.length() > 0):
+		check_ray()
 	
 	var ray = get_node("ray");
 	if ray.is_colliding():
