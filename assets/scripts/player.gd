@@ -9,14 +9,28 @@ const air_accel = 0.1;
 
 func _input(ie):
 	if ie.type == InputEvent.MOUSE_MOTION:
-		var yaw = rad2deg(get_node("body").get_rotation().y);
-		var pitch = rad2deg(get_node("body/camera").get_rotation().x);
+		var body = get_node("body")
+		var camera = get_node("body/camera")
+		var yaw = rad2deg(body.get_rotation().y);
+		var pitch = rad2deg(camera.get_rotation().x);
 		
 		yaw = fmod(yaw - ie.relative_x * view_sensitivity, 360);
 		pitch = max(min(pitch + ie.relative_y * view_sensitivity, 90), -90);
 		
-		get_node("body").set_rotation(Vector3(0, deg2rad(yaw), 0));
-		get_node("body/camera").set_rotation(Vector3(deg2rad(pitch), 0, 0));
+		body.set_rotation(Vector3(0, deg2rad(yaw), 0));
+		camera.set_rotation(Vector3(deg2rad(pitch), 0, 0));
+		
+		var camRay = get_node("body/camera/camRay")
+		if (camRay.is_colliding()):
+			print(camRay.get_collider().get_name())
+			if (camRay.get_collider().get_name()=="floaty"):
+				var green_mat = FixedMaterial.new()
+				green_mat.set_parameter(green_mat.PARAM_DIFFUSE, Color(0, 1, 0, 1))
+				camRay.get_collider().get_node("mesh").set_material_override(green_mat)
+
+		
+	
+
 
 func _integrate_forces(state):
 	
@@ -51,7 +65,6 @@ func _integrate_forces(state):
 			#apply_impulse(Vector3(), normal * jump_speed * get_mass());
 			apply_impulse(Vector3(), Vector3(0,1,0) * jump_speed * get_mass());
 		if Input.is_key_pressed(KEY_M):
-			#apply_impulse(Vector3(), normal * jump_speed * get_mass());
 			get_node("body/camera").set_translation(Vector3(0,0.5,0))
 		else:
 			get_node("body/camera").set_translation(Vector3(0,1.4,0))
@@ -60,7 +73,9 @@ func _integrate_forces(state):
 	state.integrate_forces();
 
 func _ready():
-	set_process_input(true);
+	set_process_input(true)
+	set_fixed_process(true)
+	get_node("body/camera/camRay").add_exception(self)
 
 func _enter_tree():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED);
