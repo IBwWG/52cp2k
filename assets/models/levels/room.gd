@@ -4,7 +4,6 @@ var backMaterial = FixedMaterial.new()
 var frontNormal = Vector3(0, 0, 1)
 var backNormal = frontNormal * -1
 
-#Actual code
 func _ready():
 	var tex = ImageTexture.new()
 	tex.load("res://assets/textures/cards/back.png")
@@ -13,22 +12,24 @@ func _ready():
 	#rand_seed(42)
 	randomize()
 	set_fixed_process(true)
-	# c s h d
 	var suits = ["Clubs","Spades","Hearts","Diamonds"]
 	var faces = ["A", "K", "Q", "J"]
 	for i in range(9):
 		faces.push_back(str(10-i))
 	for i in range(4):
 		for j in range(13):
-			addCard(0,0.84,-2.0+j/13.0+(i*1.0), 0.3, faces[j] + " of " + suits[i], (j*4)+i+1)
-	print("save40")
+			addCard(-7 + rand_range(0,14),5,-7 + rand_range(0,14), 0.3, faces[j] + " of " + suits[i], (j*4)+i+1)
+	print("save45")
+
+#func _integrate_forces(state):
+#	
 
 func addCard(x, y, z, scale, name, fileNumber):
 	# new container node for the card
 	var node = RigidBody.new()
 	node.set_name(name)
-	node.set_meta("is_card", true)
 	node.set_gravity_scale(0.1)
+	node.set_meta("is_card", true)
 	add_child(node)
 	
 	# add card face to the node
@@ -64,6 +65,7 @@ func addCard(x, y, z, scale, name, fileNumber):
 	box.set_extents(ratio / 2 + Vector3(0,0,0.01))
 	node.add_shape(box, Transform(Vector3(1,0,0),Vector3(0,1,0),Vector3(0,0,1),Vector3(0,0,0)).translated(ratio / 2))
 	node.set_translation(Vector3(x,y,z))
+	node.set_rotation(Vector3(rand_range(-PI/2,PI/2),0,0))
 
 func add_tri(s, pts, ratio):
 	for h in range(pts.size()):
