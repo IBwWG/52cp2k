@@ -1,13 +1,14 @@
 extends Spatial
 
-var cardBack = preload("res://assets/textures/cards/back.png")
 var backMaterial = FixedMaterial.new()
 var frontNormal = Vector3(0, 0, 1)
 var backNormal = frontNormal * -1
 
 #Actual code
 func _ready():
-	backMaterial.set_texture(0, cardBack)
+	var tex = ImageTexture.new()
+	tex.load("res://assets/textures/cards/back.png")
+	backMaterial.set_texture(0, tex)
 	#The initial seed
 	#rand_seed(42)
 	randomize()
@@ -19,9 +20,8 @@ func _ready():
 		faces.push_back(str(10-i))
 	for i in range(4):
 		for j in range(13):
-			addCard(0,4.84,-2.0+j/13.0+(i*1.0), 0.3, faces[j] + " of " + suits[i], (j*4)+i+1)
-#	addCard(0,1,0,1,"a",15)
-	print("save39")
+			addCard(0,0.84,-2.0+j/13.0+(i*1.0), 0.3, faces[j] + " of " + suits[i], (j*4)+i+1)
+	print("save40")
 
 func addCard(x, y, z, scale, name, fileNumber):
 	# new container node for the card
@@ -40,7 +40,6 @@ func addCard(x, y, z, scale, name, fileNumber):
 	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
 	surface.set_material(material)
 	var mesh = MeshInstance.new()
-#	mesh.set_name("mesh")
 	surface.add_normal(frontNormal)
 	var corners = Vector3Array([Vector3(0,1,0), Vector3(1,1,0), Vector3(1,0,0), Vector3(0,0,0)])
 	var ratio = Vector3(1.5, 2.1, 0) * scale
@@ -54,7 +53,6 @@ func addCard(x, y, z, scale, name, fileNumber):
 	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
 	surface.set_material(backMaterial)
 	var backMesh = MeshInstance.new()
-#	backMesh.set_name("back_mesh")
 	surface.add_normal(backNormal)
 	add_quad(surface,[corners[1],corners[0],corners[3],corners[2]], ratio)
 	backMesh.set_mesh(surface.commit())
