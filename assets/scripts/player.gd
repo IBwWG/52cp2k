@@ -28,6 +28,9 @@ func _input(ie):
 			sighted.get_parent().remove_child(sighted)
 			sighted = null
 			player.play("hit")
+			get_node("/root/main").set_meta("cards_left", get_node("/root/main").get_meta("cards_left") - 1)
+			if get_node("/root/main").get_meta("cards_left") <= 0:
+				get_node("/root/main").set_meta("done", true)
 		else:
 			player.play("miss")
 
@@ -39,15 +42,24 @@ func check_ray():
 		var collider = camRay.get_collider()
 		if (collider.has_meta("is_card")):
 			sighted = collider
-		if (sighted != null):
-			printNoRepeat(sighted.get_name())
-
-func printNoRepeat(what):
-	if (last != ":"+what):
+#		if (sighted != null):
+#			printNoRepeat(sighted.get_name())
+#
+#func printNoRepeat(what):
+#	if (last != ":"+what):
 #		print(":"+what)
-		last = ":"+what
+#		last = ":"+what
 
 func _integrate_forces(state):
+	if get_node("/root/main").has_meta("done"):
+		var left = get_node("/root/main").get_meta("cards_left")
+		var msg = "You "
+		if left <= 0:
+			msg += "win!"
+		else:
+			msg += "needed " + str(left) + " more cards.  Better luck next time!"
+		msg += "\nPress Escape again to leave.  Thanks for playing!"
+		get_node("/root/main/gui/lblPressEsc").set_text(msg)
 	
 	var aim = get_node("body").get_global_transform().basis;
 	var direction = Vector3();
@@ -81,7 +93,7 @@ func _integrate_forces(state):
 		if Input.is_key_pressed(KEY_SPACE):
 			#apply_impulse(Vector3(), normal * jump_speed * get_mass());
 			apply_impulse(Vector3(), Vector3(0,1,0) * jump_speed * get_mass());
-		if Input.is_key_pressed(KEY_M):
+		if Input.is_key_pressed(KEY_X):
 			get_node("body/camera").set_translation(Vector3(0,0.5,0))
 		else:
 			get_node("body/camera").set_translation(Vector3(0,1.4,0))
@@ -93,6 +105,7 @@ func _ready():
 	set_process_input(true)
 	set_fixed_process(true)
 	get_node("body/camera/camRay").add_exception(self)
+	get_node("/root/main").set_meta("cards_left", 52)
 
 func _enter_tree():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED);
