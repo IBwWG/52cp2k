@@ -22,9 +22,14 @@ func _input(ie):
 		body.set_rotation(Vector3(0, deg2rad(yaw), 0));
 		camera.set_rotation(Vector3(deg2rad(pitch), 0, 0));
 
-	elif (ie.type == InputEvent.MOUSE_BUTTON and ie.pressed and sighted != null):
-		sighted.get_parent().remove_child(sighted)
-		sighted = null
+	elif (ie.type == InputEvent.MOUSE_BUTTON and ie.pressed):
+		var player = get_node("/root/main/SamplePlayer")
+		if (sighted != null):
+			sighted.get_parent().remove_child(sighted)
+			sighted = null
+			player.play("hit")
+		else:
+			player.play("miss")
 
 
 func check_ray():

@@ -18,8 +18,8 @@ func _ready():
 		faces.push_back(str(10-i))
 	for i in range(4):
 		for j in range(13):
-			addCard(-7 + rand_range(0,14),5,-7 + rand_range(0,14), 0.3, faces[j] + " of " + suits[i], (j*4)+i+1)
-	print("save45")
+			addCard(-7 + rand_range(0,14),2.5,-7 + rand_range(0,14), 0.2, faces[j] + " of " + suits[i], (j*4)+i+1)
+	print("save46")
 
 #func _integrate_forces(state):
 #	for node in get_children():
@@ -30,7 +30,7 @@ func addCard(x, y, z, scale, name, fileNumber):
 	# new container node for the card
 	var node = RigidBody.new()
 	node.set_name(name)
-	node.set_gravity_scale(1)
+#	node.set_gravity_scale(0.1)
 	node.set_meta("is_card", true)
 	add_child(node)
 	
