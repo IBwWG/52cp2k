@@ -23,21 +23,19 @@ func _input(ie):
 		camera.set_rotation(Vector3(deg2rad(pitch), 0, 0));
 
 	elif (ie.type == InputEvent.MOUSE_BUTTON and ie.pressed and sighted != null):
-		var green_mat = FixedMaterial.new()
-		green_mat.set_parameter(green_mat.PARAM_DIFFUSE, Color(0, 1, 0, 1))
-		sighted.get_node("mesh").set_material_override(green_mat)
+		sighted.get_parent().remove_child(sighted)
+		sighted = null
 
 
 func check_ray():
 	sighted = null
 	var camRay = get_node("body/camera/camRay")
 	if (camRay.is_colliding()):
-		printNoRepeat(camRay.get_collider().get_name())
 		var collider = camRay.get_collider()
-#		if (collider.has_meta("is_card")):
-		sighted = collider
-#	elif (camRay.get_collider() != null):
-#		printNoRepeat("noncol " + camRay.get_collider().get_name())
+		if (collider.has_meta("is_card")):
+			sighted = collider
+		if (sighted != null):
+			printNoRepeat(sighted.get_name())
 
 func printNoRepeat(what):
 	if (last != ":"+what):
