@@ -2,6 +2,7 @@ extends RigidBody
 
 var view_sensitivity = 0.3;
 var sighted = null;
+var last = ""
 
 const walk_speed = 5;
 const jump_speed = 3;
@@ -32,10 +33,17 @@ func check_ray():
 	sighted = null
 	var camRay = get_node("body/camera/camRay")
 	if (camRay.is_colliding()):
-#		print(camRay.get_collider().get_name())
+		printNoRepeat(camRay.get_collider().get_name())
 		var collider = camRay.get_collider()
-		if (collider.get_name()=="floaty"):
-			sighted = collider
+#		if (collider.has_meta("is_card")):
+		sighted = collider
+	elif (camRay.get_collider() != null):
+		printNoRepeat("noncol " + camRay.get_collider().get_name())
+
+func printNoRepeat(what):
+	if (last != what):
+		print(what)
+		last = what
 
 func _integrate_forces(state):
 	

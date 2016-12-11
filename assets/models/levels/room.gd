@@ -41,11 +41,58 @@ func _ready():
 	#rand_seed(42)
 	randomize()
 	set_fixed_process(true)
-	
-	#Trials
-#	for i in range(4):
-#		for j in range(13):
-#			addCard(9 - j*4, 0, 9 - i*4, 1, 1, 0.80, 1.40)
+	# c s h d
+	var suits = ["Clubs","Spades","Hearts","Diamonds"]
+	var faces = ["A", "K", "Q", "J"]
+	for i in range(9):
+		faces.push_back(str(10-i))
+	for i in range(4):
+		for j in range(13):
+			addCard(-7+j*1.5,0.1+i*2.1,-2, 1, faces[j] + " of " + suits[i], (j*4)+i+1)
+	print("save10")
+
+func addCard(x, y, z, scale, name, fileNumber):
+	var surface = SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var material = FixedMaterial.new()
+	var tex = ImageTexture.new()
+	tex.load("res://assets/textures/cards/" + str(fileNumber) + ".png")
+	material.set_texture(0, tex)
+	surface.set_material(material)
+	var node = RigidBody.new()
+	node.set_name(name)
+	node.set_meta("is_card", true)
+	node.set_gravity_scale(0)
+	add_child(node)
+	var mesh = MeshInstance.new()
+	mesh.set_name("mesh")
+	node.add_child(mesh)
+	surface.add_normal(Vector3(0, 0, 1))
+	var corners = Vector3Array([Vector3(0,1,0), Vector3(1,1,0), Vector3(1,0,0), Vector3(0,0,0)])
+	var ratio = Vector3(1.5, 2.1, 0) * scale
+	var trans = Vector3(x,y,z)
+	for c in range(corners.size()):
+		corners[c] *= ratio
+		corners[c] += trans
+	add_quad(surface, corners)
+	mesh.set_mesh(surface.commit())
+	var box = BoxShape.new()
+	var col = CollisionShape.new()
+#	col.set_meta("is_card", true)
+	col.set_name(name + "collider")
+	col.set_shape(box)
+	# make a skinny prism
+	col.set_scale(ratio / 2 + Vector3(0,0,0.01))
+	col.set_translation(trans + ratio / 2)
+	node.add_child(col)
+
+func add_tri(s, pts):
+	for h in range(pts.size()):
+		s.add_uv(Vector2(pts[h].x, pts[h].y).normalized())
+		s.add_vertex(pts[h])
+func add_quad(s, pts):
+	add_tri(s, [pts[0], pts[1], pts[2]])
+	add_tri(s, [pts[0], pts[2], pts[3]])
 
 #Appends a cube to an existing Surfacetool
 func addCubeMesh(x, y, z, dx, dy, dz, color, surface, blendMode = "sub"):
@@ -53,9 +100,6 @@ func addCubeMesh(x, y, z, dx, dy, dz, color, surface, blendMode = "sub"):
 	#This allows to use RGB colors instead of images. Spooner is a genius!
 	var material = FixedMaterial.new()
 	material.set_fixed_flag(FixedMaterial.FLAG_USE_COLOR_ARRAY, true)
-	
-	#Allow transparency
-	material.set_fixed_flag(FixedMaterial.FLAG_USE_ALPHA, true)
 	surface.set_material(material)
 	
 	#This is the central point in the base of the cube
@@ -132,7 +176,7 @@ func addCubeMesh(x, y, z, dx, dy, dz, color, surface, blendMode = "sub"):
 
 
 
-func addCard(x, y, z, dx, dz, minHeight, maxHeight):
+func addCardb(x, y, z, dx, dz, minHeight, maxHeight):
 
 	var buildingName = "bunch" + str(residentialBuildingsCount)
 
@@ -146,7 +190,7 @@ func addCard(x, y, z, dx, dz, minHeight, maxHeight):
 	add_child(node)
 	
 	#Floor
-	addCubeMesh(x, y, z, dx, 0.005, dz, buildingColor, surface)
+#	addCubeMesh(x, y, z, dx, 0.005, dz, buildingColor, surface)
 	
 	##Add row of buildings in Z axis
 	#Widths
@@ -169,70 +213,70 @@ func addCard(x, y, z, dx, dz, minHeight, maxHeight):
 		addTower(x + dx - 0.2 * dx, y, z + dz - width - acumWidth, 0.2 * dx, localDy, width, surface)
 		acumWidth += width * 2
 	
-	##Add row of buildings in the other side of the Z axis
-	#Widths
-	var widths = []
-	var widthLeft = dz
-	
-	while(widthLeft > 0.30):
-		var w = rand_range(0.20, 0.28)
-		widths.push_back(w)
-		widthLeft -= w
-	
-	#Add the rest
-	widths.push_back(widthLeft)
-
-	#Create the blocks
-	var acumWidth = 0
-	for width in widths:
-		
-		var localDy = rand_range(minHeight, maxHeight)
-		addTower(x - dx + 0.2 * dx, y, z + dz - width - acumWidth, 0.2 * dx, localDy, width, surface)
-		acumWidth += width * 2
-		
-	##Add row of buildings in the X axis
-	#Widths
-	var widths = []
-	var widthLeft = dx - dx * 0.4
-	
-	while(widthLeft > 0.30):
-		var w = rand_range(0.18, 0.23)
-		widths.push_back(w)
-		widthLeft -= w
-	
-	#Add the rest
-	widths.push_back(widthLeft)
-
-	#Create the blocks
-	var acumWidth = 0
-	for width in widths:
-	
-		var localDy = rand_range(minHeight, maxHeight)
-		addTower(x + dx - width - 0.4 * dx - acumWidth, y, z + dz - 0.2 * dz, width, localDy, 0.2 * dz, surface)
-		acumWidth += width * 2
-
-	##Add the other row of buildings in the X axis
-	#Widths
-	var widths = []
-	var widthLeft = dx - dx * 0.4
-	
-	while(widthLeft > 0.30):
-		var w = rand_range(0.18, 0.23)
-		widths.push_back(w)
-		widthLeft -= w
-	
-	#Add the rest
-	widths.push_back(widthLeft)
-
-	#Create the blocks
-	var acumWidth = 0
-	for width in widths:
-	
-		var localDy = rand_range(minHeight, maxHeight)
-		addTower(x + dx - width - 0.4 * dx - acumWidth, y, z - dz + 0.2 * dz, width, localDy, 0.2 * dz, surface)
-		acumWidth += width * 2
-		
-	residentialBuildingsCount += 1
+#	##Add row of buildings in the other side of the Z axis
+#	#Widths
+#	var widths = []
+#	var widthLeft = dz
+#	
+#	while(widthLeft > 0.30):
+#		var w = rand_range(0.20, 0.28)
+#		widths.push_back(w)
+#		widthLeft -= w
+#	
+#	#Add the rest
+#	widths.push_back(widthLeft)
+#
+#	#Create the blocks
+#	var acumWidth = 0
+#	for width in widths:
+#		
+#		var localDy = rand_range(minHeight, maxHeight)
+#		addTower(x - dx + 0.2 * dx, y, z + dz - width - acumWidth, 0.2 * dx, localDy, width, surface)
+#		acumWidth += width * 2
+#		
+#	##Add row of buildings in the X axis
+#	#Widths
+#	var widths = []
+#	var widthLeft = dx - dx * 0.4
+#	
+#	while(widthLeft > 0.30):
+#		var w = rand_range(0.18, 0.23)
+#		widths.push_back(w)
+#		widthLeft -= w
+#	
+#	#Add the rest
+#	widths.push_back(widthLeft)
+#
+#	#Create the blocks
+#	var acumWidth = 0
+#	for width in widths:
+#	
+#		var localDy = rand_range(minHeight, maxHeight)
+#		addTower(x + dx - width - 0.4 * dx - acumWidth, y, z + dz - 0.2 * dz, width, localDy, 0.2 * dz, surface)
+#		acumWidth += width * 2
+#
+#	##Add the other row of buildings in the X axis
+#	#Widths
+#	var widths = []
+#	var widthLeft = dx - dx * 0.4
+#	
+#	while(widthLeft > 0.30):
+#		var w = rand_range(0.18, 0.23)
+#		widths.push_back(w)
+#		widthLeft -= w
+#	
+#	#Add the rest
+#	widths.push_back(widthLeft)
+#
+#	#Create the blocks
+#	var acumWidth = 0
+#	for width in widths:
+#	
+#		var localDy = rand_range(minHeight, maxHeight)
+#		addTower(x + dx - width - 0.4 * dx - acumWidth, y, z - dz + 0.2 * dz, width, localDy, 0.2 * dz, surface)
+#		acumWidth += width * 2
+#		
+#	residentialBuildingsCount += 1
 	
 	#Set the created mesh to the node
 	node.set_mesh(surface.commit())
@@ -262,9 +306,3 @@ func addTower(x, y, z, dx, dy, dz, buildingSurface, useAlpha = true):
 			accumHeight += 0.03
 
 		addCubeMesh(x, y + dy*2.0, z, dx, 0.003, dz, slabColor, buildingSurface)
-
-#func _fixed_process(delta):
-#	var space_state = get_world().get_direct_space_state()
-#	var player = get_node("root/main/env/player")
-#	var result = space_state.intersect_ray( player.get_translation(), get_node("root/main/env/level_test/floaty"), [ player ] )
-#	print(result)
