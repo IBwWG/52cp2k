@@ -22,13 +22,15 @@ func _ready():
 	print("save45")
 
 #func _integrate_forces(state):
-#	
+#	for node in get_children():
+#		if (node.has_meta("is_card")):
+# paper falling physics here...
 
 func addCard(x, y, z, scale, name, fileNumber):
 	# new container node for the card
 	var node = RigidBody.new()
 	node.set_name(name)
-	node.set_gravity_scale(0.1)
+	node.set_gravity_scale(1)
 	node.set_meta("is_card", true)
 	add_child(node)
 	
@@ -65,7 +67,12 @@ func addCard(x, y, z, scale, name, fileNumber):
 	box.set_extents(ratio / 2 + Vector3(0,0,0.01))
 	node.add_shape(box, Transform(Vector3(1,0,0),Vector3(0,1,0),Vector3(0,0,1),Vector3(0,0,0)).translated(ratio / 2))
 	node.set_translation(Vector3(x,y,z))
-	node.set_rotation(Vector3(rand_range(-PI/2,PI/2),0,0))
+#	node.set_rotation(Vector3(rand_range(-PI/2,PI/2),0,0))
+	if randi() % 2 == 0:
+		node.set_rotation_deg(Vector3(85,0,0))
+	else:
+		node.set_rotation_deg(Vector3(-85,0,0))
+
 
 func add_tri(s, pts, ratio):
 	for h in range(pts.size()):
