@@ -21,8 +21,7 @@ func _input(ie):
 		
 		body.set_rotation(Vector3(0, deg2rad(yaw), 0));
 		camera.set_rotation(Vector3(deg2rad(pitch), 0, 0));
-		
-		check_ray()
+
 	elif (ie.type == InputEvent.MOUSE_BUTTON and ie.pressed and sighted != null):
 		var green_mat = FixedMaterial.new()
 		green_mat.set_parameter(green_mat.PARAM_DIFFUSE, Color(0, 1, 0, 1))
@@ -37,13 +36,13 @@ func check_ray():
 		var collider = camRay.get_collider()
 #		if (collider.has_meta("is_card")):
 		sighted = collider
-	elif (camRay.get_collider() != null):
-		printNoRepeat("noncol " + camRay.get_collider().get_name())
+#	elif (camRay.get_collider() != null):
+#		printNoRepeat("noncol " + camRay.get_collider().get_name())
 
 func printNoRepeat(what):
-	if (last != what):
-		print(what)
-		last = what
+	if (last != ":"+what):
+		print(":"+what)
+		last = ":"+what
 
 func _integrate_forces(state):
 	
@@ -59,7 +58,7 @@ func _integrate_forces(state):
 	if Input.is_key_pressed(KEY_D):
 		direction += aim[0];
 	direction = direction.normalized();
-	if (direction.length() > 0):
+	if (direction.length() > 0 or Input.get_mouse_speed().length() > 0):
 		check_ray()
 	
 	var ray = get_node("ray");

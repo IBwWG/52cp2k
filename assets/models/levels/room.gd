@@ -33,10 +33,12 @@ var blockyBuildingCount = 0
 var houseCount = 0
 var piramidalBuildingCount = 0
 var residentialBuildingsCount = 0
+var cardBack = preload("res://assets/textures/cards/back.png")
+var backMaterial = FixedMaterial.new()
 
 #Actual code
 func _ready():
-
+	backMaterial.set_texture(0, cardBack)
 	#The initial seed
 	#rand_seed(42)
 	randomize()
@@ -46,27 +48,29 @@ func _ready():
 	var faces = ["A", "K", "Q", "J"]
 	for i in range(9):
 		faces.push_back(str(10-i))
-	for i in range(4):
-		for j in range(13):
-			addCard(-7+j*1.5,0.1+i*2.1,-2, 1, faces[j] + " of " + suits[i], (j*4)+i+1)
-	print("save10")
+#	for i in range(4):
+#		for j in range(13):
+#			addCard(-7+j*1.5,0.1+i*2.1,-2, 0.9, faces[j] + " of " + suits[i], (j*4)+i+1)
+	addCard(0,0,0,1,"a",15)
+	print("save21")
 
 func addCard(x, y, z, scale, name, fileNumber):
-	var surface = SurfaceTool.new()
-	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var material = FixedMaterial.new()
-	var tex = ImageTexture.new()
-	tex.load("res://assets/textures/cards/" + str(fileNumber) + ".png")
-	material.set_texture(0, tex)
-	surface.set_material(material)
+	# new container node for the card
 	var node = RigidBody.new()
 	node.set_name(name)
-	node.set_meta("is_card", true)
 	node.set_gravity_scale(0)
 	add_child(node)
+	
+	# add card face to the node
+	var tex = ImageTexture.new()
+	tex.load("res://assets/textures/cards/" + str(fileNumber) + ".png")
+	var material = FixedMaterial.new()
+	material.set_texture(0, tex)
+	var surface = SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	surface.set_material(material)
 	var mesh = MeshInstance.new()
 	mesh.set_name("mesh")
-	node.add_child(mesh)
 	surface.add_normal(Vector3(0, 0, 1))
 	var corners = Vector3Array([Vector3(0,1,0), Vector3(1,1,0), Vector3(1,0,0), Vector3(0,0,0)])
 	var ratio = Vector3(1.5, 2.1, 0) * scale
@@ -76,15 +80,32 @@ func addCard(x, y, z, scale, name, fileNumber):
 		corners[c] += trans
 	add_quad(surface, corners)
 	mesh.set_mesh(surface.commit())
+	node.add_child(mesh)
+	
+	# add card back to the node
+	var backSurface = SurfaceTool.new()
+	backSurface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	backSurface.set_material(backMaterial)
+	var backMesh = MeshInstance.new()
+	backMesh.set_name("back_mesh")
+	backSurface.add_normal(Vector3(0,0,-1))
+	add_quad(backSurface,[corners[1],corners[0],corners[3],corners[2]])
+	backMesh.set_mesh(backSurface.commit())
+	node.add_child(backMesh)
+	
+	# add collision shape
 	var box = BoxShape.new()
-	var col = CollisionShape.new()
-#	col.set_meta("is_card", true)
-	col.set_name(name + "collider")
-	col.set_shape(box)
+	node.add_shape(box)
 	# make a skinny prism
-	col.set_scale(ratio / 2 + Vector3(0,0,0.01))
-	col.set_translation(trans + ratio / 2)
-	node.add_child(col)
+	node.set_scale(ratio / 2 + Vector3(0,0,0.01))
+	node.set_translation(trans + ratio / 2)
+	# otherwise it's not debug-visible:
+#	var col = CollisionShape.new()
+#	col.set_scale(ratio / 2 + Vector3(0,0,0.01))
+#	col.set_translation(trans + ratio / 2)
+#	col.set_shape(box)
+#	node.add_child(col)
+	
 
 func add_tri(s, pts):
 	for h in range(pts.size()):
