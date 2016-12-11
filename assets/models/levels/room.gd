@@ -52,7 +52,7 @@ func _ready():
 #		for j in range(13):
 #			addCard(-7+j*1.5,0.1+i*2.1,-2, 0.9, faces[j] + " of " + suits[i], (j*4)+i+1)
 	addCard(0,0,0,1,"a",15)
-	print("save21")
+	print("save23")
 
 func addCard(x, y, z, scale, name, fileNumber):
 	# new container node for the card
@@ -83,14 +83,14 @@ func addCard(x, y, z, scale, name, fileNumber):
 	node.add_child(mesh)
 	
 	# add card back to the node
-	var backSurface = SurfaceTool.new()
-	backSurface.begin(Mesh.PRIMITIVE_TRIANGLES)
-	backSurface.set_material(backMaterial)
+
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	surface.set_material(backMaterial)
 	var backMesh = MeshInstance.new()
 	backMesh.set_name("back_mesh")
-	backSurface.add_normal(Vector3(0,0,-1))
-	add_quad(backSurface,[corners[1],corners[0],corners[3],corners[2]])
-	backMesh.set_mesh(backSurface.commit())
+	surface.add_normal(Vector3(0,0,-1))
+	add_quad(surface,[corners[1],corners[0],corners[3],corners[2]])
+	backMesh.set_mesh(surface.commit())
 	node.add_child(backMesh)
 	
 	# add collision shape
