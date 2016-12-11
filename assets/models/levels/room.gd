@@ -19,7 +19,7 @@ func _ready():
 	for i in range(4):
 		for j in range(13):
 			addCard(-7 + rand_range(0,14),2.5,-7 + rand_range(0,14), 0.2, faces[j] + " of " + suits[i], (j*4)+i+1)
-	print("save47")
+#	print("save47")
 
 #func _integrate_forces(state):
 #	for node in get_children():
