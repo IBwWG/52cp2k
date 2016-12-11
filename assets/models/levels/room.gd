@@ -19,9 +19,9 @@ func _ready():
 		faces.push_back(str(10-i))
 	for i in range(4):
 		for j in range(13):
-			addCard(0,0.75,-2.0+j/13.0+(i*1.0), 0.3, faces[j] + " of " + suits[i], (j*4)+i+1)
+			addCard(0,4.84,-2.0+j/13.0+(i*1.0), 0.3, faces[j] + " of " + suits[i], (j*4)+i+1)
 #	addCard(0,1,0,1,"a",15)
-	print("save35")
+	print("save39")
 
 func addCard(x, y, z, scale, name, fileNumber):
 	# new container node for the card
@@ -63,8 +63,8 @@ func addCard(x, y, z, scale, name, fileNumber):
 	# add collision shape
 	var box = BoxShape.new()
 	# make a skinny prism
-	box.set_extents(ratio + Vector3(0,0,0.001))
-	node.add_shape(box)
+	box.set_extents(ratio / 2 + Vector3(0,0,0.01))
+	node.add_shape(box, Transform(Vector3(1,0,0),Vector3(0,1,0),Vector3(0,0,1),Vector3(0,0,0)).translated(ratio / 2))
 	node.set_translation(Vector3(x,y,z))
 
 func add_tri(s, pts, ratio):

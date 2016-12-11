@@ -39,7 +39,7 @@ func check_ray():
 
 func printNoRepeat(what):
 	if (last != ":"+what):
-		print(":"+what)
+#		print(":"+what)
 		last = ":"+what
 
 func _integrate_forces(state):
