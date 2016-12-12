@@ -4,6 +4,7 @@ var view_sensitivity = 0.3;
 var sighted = null;
 var last = ""
 
+
 const walk_speed = 5;
 const jump_speed = 3;
 const max_accel = 0.02;
@@ -17,7 +18,7 @@ func _input(ie):
 		var pitch = rad2deg(camera.get_rotation().x);
 		
 		yaw = fmod(yaw - ie.relative_x * view_sensitivity, 360);
-		pitch = max(min(pitch + ie.relative_y * view_sensitivity, 90), -90);
+		pitch = max(min(pitch - ie.relative_y * view_sensitivity * get_node("/root/main").get_meta("inversion"), 90), -90);
 		
 		body.set_rotation(Vector3(0, deg2rad(yaw), 0));
 		camera.set_rotation(Vector3(deg2rad(pitch), 0, 0));
