@@ -65,13 +65,13 @@ func _integrate_forces(state):
 	var aim = get_node("body").get_global_transform().basis;
 	var direction = Vector3();
 	
-	if Input.is_key_pressed(KEY_W):
+	if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
 		direction -= aim[2];
-	if Input.is_key_pressed(KEY_S):
+	if Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN):
 		direction += aim[2];
-	if Input.is_key_pressed(KEY_A):
+	if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
 		direction -= aim[0];
-	if Input.is_key_pressed(KEY_D):
+	if Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT):
 		direction += aim[0];
 	direction = direction.normalized();
 	if (direction.length() > 0 or Input.get_mouse_speed().length() > 0):
